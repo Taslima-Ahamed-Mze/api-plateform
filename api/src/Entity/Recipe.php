@@ -2,9 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Common\Filter\SearchFilterInterface;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\RecipeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,14 +16,19 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(normalizationContext: ['groups' =>['toto']]),
+        new Get(),
         new GetCollection(),
-        new Post()
-    ]
+        new Post(
+            denormalizationContext: ['groups' => 'create-recipe'],
+            validationContext: ['groups' => 'create-recipe']
+        ),
+        new Patch(denormalizationContext: ['groups' => 'update-recipe'])
+    ],
+    normalizationContext: ['groups' =>['all-client', 'read-recipe']]
 )]
 class Recipe
 {
@@ -28,30 +37,32 @@ class Recipe
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['toto'])]
+    #[ApiFilter(SearchFilter::class, strategy: SearchFilterInterface::STRATEGY_PARTIAL)]
+    #[Assert\NotBlank(groups:['create-recipe'])]
+    #[Groups(['all-client','read-recipe','create-recipe','update-recipe'])]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[Groups(['admin'])]
+
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
-
+    #[Groups(['all-client','create-recipe'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
-
+    #[Groups(['all-client','create-recipe'])]
     #[ORM\Column]
     private ?int $duration = null;
-
+    #[Groups(['all-client','create-recipe'])]
     #[ORM\Column(length: 255)]
     private ?string $difficulty = null;
-
+    #[Groups(['all-client','create-recipe'])]
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
     #[ORM\Column]
     private ?bool $status = null;
 
-
+    #[Groups(['all-client'])]
     #[ORM\ManyToOne(inversedBy: 'recipes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
