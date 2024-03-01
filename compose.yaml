@@ -37,7 +37,7 @@ services:
     environment:
       NEXT_PUBLIC_ENTRYPOINT: http://php
 
-###> doctrine/doctrine-bundle ###
+###> doctrine/doctrine-bundle ### 
   database:
     image: postgres:${POSTGRES_VERSION:-15}-alpine
     environment:
