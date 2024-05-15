@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\QuantityRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: QuantityRepository::class)]
 #[ApiResource]
@@ -15,6 +16,7 @@ class Quantity
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['read-recipe'])]
     #[ORM\Column]
     private ?int $amount = null;
 
@@ -22,6 +24,7 @@ class Quantity
     #[ORM\JoinColumn(nullable: false)]
     private ?Recipe $recipe = null;
 
+    #[Groups(['read-recipe'])]
     #[ORM\ManyToOne(inversedBy: 'quantities')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Ingredient $ingredient = null;

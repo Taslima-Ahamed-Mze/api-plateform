@@ -28,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Patch(denormalizationContext: ['groups' => 'update-recipe'])
     ],
-    normalizationContext: ['groups' =>['all-client', 'read-recipe']]
+    normalizationContext: ['groups' =>['read-recipe']]
 )]
 class Recipe
 {
@@ -39,34 +39,35 @@ class Recipe
 
     #[ApiFilter(SearchFilter::class, strategy: SearchFilterInterface::STRATEGY_PARTIAL)]
     #[Assert\NotBlank(groups:['create-recipe'])]
-    #[Groups(['all-client','read-recipe','create-recipe','update-recipe'])]
+    #[Groups(['read-recipe','create-recipe','update-recipe'])]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
-    #[Groups(['all-client','create-recipe'])]
+    #[Groups(['read-recipe','create-recipe'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
-    #[Groups(['all-client','create-recipe'])]
+    #[Groups(['read-recipe','create-recipe'])]
     #[ORM\Column]
     private ?int $duration = null;
-    #[Groups(['all-client','create-recipe'])]
+    #[Groups(['read-recipe','create-recipe'])]
     #[ORM\Column(length: 255)]
     private ?string $difficulty = null;
-    #[Groups(['all-client','create-recipe'])]
+    #[Groups(['read-recipe','create-recipe'])]
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
     #[ORM\Column]
     private ?bool $status = null;
 
-    #[Groups(['all-client'])]
+    #[Groups(['read-recipe'])]
     #[ORM\ManyToOne(inversedBy: 'recipes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
+    #[Groups(['read-recipe'])]
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Quantity::class)]
     private Collection $quantities;
 
